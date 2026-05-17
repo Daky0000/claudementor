@@ -6,6 +6,7 @@ node_modules/
 out/
 build/
 dist/
+tsconfig.tsbuildinfo
 
 # Sync .project/sourceTexts/ folder (source text files)
 
