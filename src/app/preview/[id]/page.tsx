@@ -14,6 +14,8 @@ import {
   AlertCircle,
   Loader2,
   Globe,
+  ArrowUp,
+  Wand2,
 } from "lucide-react";
 import { DesignSession, ElementorTemplate } from "@/lib/types";
 
@@ -34,6 +36,10 @@ export default function PreviewPage() {
 
   const [copied, setCopied] = useState(false);
   const [viewMode, setViewMode] = useState<"desktop" | "mobile">("desktop");
+
+  const [refineInput, setRefineInput] = useState("");
+  const [refineState, setRefineState] = useState<"idle" | "loading" | "error">("idle");
+  const [refineError, setRefineError] = useState("");
 
   // Load session
   useEffect(() => {
@@ -89,6 +95,31 @@ export default function PreviewPage() {
     await navigator.clipboard.writeText(JSON.stringify(elementorJson, null, 2));
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const handleRefine = async () => {
+    if (!session || !refineInput.trim() || refineState === "loading") return;
+    setRefineState("loading");
+    setRefineError("");
+
+    try {
+      const res = await fetch("/api/refine", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ html: session.html, instruction: refineInput.trim() }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Refinement failed");
+      setSession((prev) => prev ? { ...prev, html: data.html } : prev);
+      setRefineInput("");
+      setActiveTab("preview");
+      setConvertState("idle");
+      setElementorJson(null);
+      setRefineState("idle");
+    } catch (err: unknown) {
+      setRefineError(err instanceof Error ? err.message : "Refinement failed");
+      setRefineState("error");
+    }
   };
 
   const jsonString = elementorJson
@@ -361,6 +392,42 @@ export default function PreviewPage() {
             )}
           </div>
         )}
+      </div>
+
+      {/* Refine bar */}
+      <div className="shrink-0 border-t border-surface-border bg-surface px-4 py-3">
+        <div className={`flex items-center gap-2 rounded-xl border px-3 py-2 transition-colors ${
+          refineState === "error" ? "border-red-500/40 bg-surface-raised" : "border-surface-border bg-surface-raised hover:border-[#3a3a3a]"
+        }`}>
+          <Wand2 size={13} className="text-text-muted shrink-0" />
+          <input
+            type="text"
+            value={refineInput}
+            onChange={(e) => { setRefineInput(e.target.value); setRefineError(""); setRefineState("idle"); }}
+            onKeyDown={(e) => e.key === "Enter" && handleRefine()}
+            placeholder={refineState === "loading" ? "Claude is refining your design..." : "Refine the design… (e.g. make the hero darker, add a testimonials section)"}
+            disabled={refineState === "loading"}
+            className="flex-1 bg-transparent text-text-primary placeholder-text-muted text-xs outline-none disabled:opacity-50"
+          />
+          {refineState === "error" && (
+            <span className="text-red-400 text-xs shrink-0 max-w-[200px] truncate">{refineError}</span>
+          )}
+          <button
+            onClick={handleRefine}
+            disabled={!refineInput.trim() || refineState === "loading"}
+            className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 transition-all ${
+              refineInput.trim() && refineState !== "loading"
+                ? "bg-accent hover:bg-accent-hover text-white"
+                : "bg-surface-border text-text-muted cursor-not-allowed"
+            }`}
+          >
+            {refineState === "loading" ? (
+              <Loader2 size={11} className="animate-spin" />
+            ) : (
+              <ArrowUp size={11} />
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );
