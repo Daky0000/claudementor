@@ -16,9 +16,12 @@
         "normalization": "NFC",
         "comments": [],
         "requiredExtensions": {
-            "codexEditor": "0.25.0",
+            "codexEditor": "0.27.0",
             "frontierAuthentication": "0.6.0"
-        }
+        },
+        "validationCount": 1,
+        "validationCountAudio": 1,
+        "abbreviation": ""
     },
     "idAuthorities": {},
     "identification": {},
@@ -110,5 +113,44 @@
     "ingredients": {},
     "copyright": {
         "shortStatements": []
-    }
+    },
+    "users": [
+        {
+            "userName": "daky",
+            "codexVersion": "2.6.20",
+            "updatedAt": 1778966385114
+        }
+    ],
+    "edits": [
+        {
+            "editMap": [
+                "meta",
+                "validationCount"
+            ],
+            "value": 1,
+            "timestamp": 1778966387078,
+            "type": "user-edit",
+            "author": "daky"
+        },
+        {
+            "editMap": [
+                "meta",
+                "validationCountAudio"
+            ],
+            "value": 1,
+            "timestamp": 1778966387079,
+            "type": "user-edit",
+            "author": "daky"
+        },
+        {
+            "editMap": [
+                "meta",
+                "abbreviation"
+            ],
+            "value": "",
+            "timestamp": 1778966387079,
+            "type": "user-edit",
+            "author": "daky"
+        }
+    ]
 }

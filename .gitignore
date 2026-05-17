@@ -1,3 +1,12 @@
+# Next.js
+.next/
+node_modules/
+.env.local
+.env*.local
+out/
+build/
+dist/
+
 # Sync .project/sourceTexts/ folder (source text files)
 
 # Don't sync user-specific SQLite databases
@@ -6,6 +15,9 @@
 # Don't sync SQLite auxiliary files
 .project/*.sqlite-wal
 .project/*.sqlite-shm
+
+# Don't sync temporary files
+.project/.temp/**
 
 # Don't sync user-specific files
 .project/complete_drafts.txt
